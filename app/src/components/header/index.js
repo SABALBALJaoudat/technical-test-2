@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -30,6 +30,29 @@ const Header = () => {
     menuTransition: `${open ? "translate-x-0" : "translate-x-[105%]"}`,
   };
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      console.log(event.target);
+      const dropdown = document.querySelector(".dropdown-menu-click");
+      const avatar = document.querySelector(".avatar-click");
+      console.log(dropdown);
+      console.log(avatar);
+      if (dropdown && !avatar.contains(event.target) && !dropdown.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
   return (
     <div className="p-2 bg-[#EBF3FC] border-b border-[#a0a6b124] flex justify-between items-center w-full right-4 z-50">
       <div className="flex items-center gap-4">
@@ -48,24 +71,24 @@ const Header = () => {
             <option value="not available">Not Available</option>
           </select>
         </div>
-        <img className="w-9 h-9 bg-[#aaa] rounded-full cursor-pointer object-cover" onClick={() => setOpen(!open)} src={user.avatar} />
+        <img className="avatar-click w-9 h-9 bg-[#aaa] rounded-full cursor-pointer object-cover" onClick={() => setOpen(!open)} src={user.avatar} />
         {/* Menu */}
         <div
-          className={`w-screen md:w-[150px] h-screen md:h-fit rounded overflow-hidden z-0 bg-[#fff] opacity-[${menuStyling.menuOpacity}] 
+          className={`dropdown-menu-click w-screen md:w-[150px] h-screen md:h-fit rounded overflow-hidden z-0 bg-[#fff] opacity-[${menuStyling.menuOpacity}] 
           ${menuStyling.menuVisibility} translate-x-[${menuStyling.menuTransition}] transition duration-100 ease-in fixed top-0 right-0  md:absolute md:top-[calc(100%_+_10px)] z-50 md:z-10 shadow-menuShadow `}
           open={open}>
           <div className="text-3xl mt-3 cursor-pointer	text-[#666] block w-[45px] py-0	px-3.5	ml-auto	md:hidden " onClick={() => setOpen(false)}>
             &times;
           </div>
           <div className="text-[15px] font-[Arial] text-left text-[#888888] cursor-pointer border-l-4 border-[#ffffff] hover:border-[#4d90fb] hover:bg-[#d3bfc731] hover:text-[#333]">
-            <Link className="text-inherit p-[10px] hover:text-[#333] hover:no-underline block" to="/account">
+            <Link className="text-inherit p-[10px] hover:text-[#333] hover:no-underline block" to="/account" onClick={() => setOpen(false)}>
               My account
             </Link>
           </div>
           <div
             className="text-[15px] font-[Arial] p-[10px] text-left text-[#888888] cursor-pointer border-l-4 border-[#ffffff] hover:border-red-400 hover:bg-[#d3bfc731] hover:text-[#333]"
             onClick={logout}>
-            <Link style={{ textDecoration: "none" }} className="text-inherit hover:text-[#333]" to="#">
+            <Link style={{ textDecoration: "none" }} className="text-inherit hover:text-[#333]" to="#" onClick={() => setOpen(false)}>
               Logout
             </Link>
           </div>
